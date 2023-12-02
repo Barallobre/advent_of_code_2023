@@ -2,7 +2,7 @@
 
 string data = "";
 
-var dataConverted = Day2.getDataDay2(data);
+var dataConverted = Day2_2.getDataDay2(data);
 
 long sum = 0;
 
