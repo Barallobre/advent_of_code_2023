@@ -70,7 +70,7 @@ namespace advent_of_code_23
                     }
 
                 }
-
+             
                 foreach (var n in red)
                 {
                     if (n > 12) validGame = false;
