@@ -1,7 +1,6 @@
 ﻿using advent_of_code_23;
 
 string data = "";
-
 var dataConverted = DataConverter_day1.getData(data);
 
 long sum = 0;
