@@ -1,5 +1,7 @@
 ﻿
 using System.Collections;
+using System.ComponentModel;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace advent_of_code_23
@@ -58,7 +60,7 @@ namespace advent_of_code_23
             int total = 0;
             int indexAsterisk = 0;
             List<Tuple<string, int, int>> numberAsterisk = new List<Tuple<string, int, int>>();
-
+            int multiplication = 0;
             foreach (string[] arrayLine in allTheLines) 
             {
                 for (int i = 0; i <= arrayLine.Length-1; i++)
@@ -92,13 +94,26 @@ namespace advent_of_code_23
                 }
             }
 
-            foreach (var item in numberAsterisk)
+            numberAsterisk.Add(Tuple.Create("0", 0, 0));
+            for (int i = 0; i < numberAsterisk.Count; i++)
             {
-                Console.WriteLine(item);
-            }
-            numberAsterisk.Where(c => c.Item2.Count() > 1 && c.Item3.Count() > 1)
+                var item = numberAsterisk[i];
+                for (int j = i+1 ; j < numberAsterisk.Count ; j++)
+                {
+                    string number1 = numberAsterisk[j].Item1;
+                    int position = numberAsterisk[j].Item2;
+                    int line = numberAsterisk[j].Item3;
 
-   
+                    if(item.Item2 == position && item.Item3 == line)
+                    {
+                        multiplication = Int32.Parse(item.Item1) * Int32.Parse(number1);
+                        total += multiplication;
+                        multiplication = 0;
+                        break;
+                    }                   
+                }
+            }            
+            Console.WriteLine(total);
         }
 
         private static void PreviosAndNextLines(string[] typeOfLine, List<int> indexOfNumber, 
@@ -143,15 +158,9 @@ namespace advent_of_code_23
 
         private static void CheckValidNumbers(List<string> validNumbers,StringBuilder number,
             int indexAsterisk, int asteriskLine, List<Tuple<string, int, int>> numberAsterisk)
-        {
-            List<int> twoNumberList = new List<int>();
-            //number, linea asterisco, posicion asterisco
-            
+        {                      
             var tupleNumbers = Tuple.Create(number.ToString(), indexAsterisk, asteriskLine);
-            numberAsterisk.Add(tupleNumbers);
-                
-
-
+            numberAsterisk.Add(tupleNumbers);              
         }
     }
 }
