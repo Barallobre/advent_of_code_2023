@@ -69,65 +69,23 @@ namespace advent_of_code_23
                     }
                     if (!Char.IsDigit(character) && !string.IsNullOrEmpty(number.ToString()))
                     {
-                        int previousLine = allTheLines.IndexOf(arrayLine) - 1; //índice línea anterior a la actual
-                        int nextLine = allTheLines.IndexOf(arrayLine) + 1; //índice línea posterior a la actual
+                        int previousLine = allTheLines.IndexOf(arrayLine) - 1; 
+                        int nextLine = allTheLines.IndexOf(arrayLine) + 1;
 
-                        if (arrayLine[indexOfNumber[0]-1] != ".") //comprobar caracter de la misma línea anterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
-     
-                        if (arrayLine[indexOfNumber[number.Length-1]+1] != ".") //comprobar caracter de la misma línea posterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
-                        //............................................................
+                        CheckSameLine(arrayLine, indexOfNumber, validNumbers, number);                      
+
                         string[] prevLine = allTheLines[previousLine];
-                        
-                        foreach(int n in indexOfNumber)
-                        {
-                            if (prevLine[n] != "." && !Char.IsDigit(char.Parse(prevLine[n])))
-                            {
-                                validNumbers.Add(number.ToString());
-                            }
-                        }
-                        if (prevLine[indexOfNumber[0] - 1] != ".") //comprobar caracter de la misma línea anterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
 
-                        if (prevLine[indexOfNumber[number.Length - 1] + 1] != ".") //comprobar caracter de la misma línea posterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
+                        PreviosAndNextLines(prevLine, indexOfNumber, validNumbers, number);
 
-                        //............................................................
                         string[] postLine = allTheLines[nextLine];
 
-                        foreach (int n in indexOfNumber)
-                        {
-                            if (postLine[n] != "." && !Char.IsDigit(char.Parse(postLine[n])))
-                            {
-                                validNumbers.Add(number.ToString());
-                            }
-                        }
-                        if (postLine[indexOfNumber[0] - 1] != "." && !Char.IsDigit(char.Parse(postLine[indexOfNumber[0] - 1]))) //comprobar caracter de la misma línea anterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
-
-                        if (postLine[indexOfNumber[number.Length - 1] + 1] != "." && !Char.IsDigit(char.Parse(postLine[indexOfNumber[number.Length - 1] + 1]))) //comprobar caracter de la misma línea posterior al número
-                        {
-                            validNumbers.Add(number.ToString());
-                        }
-
-
+                        PreviosAndNextLines(postLine, indexOfNumber, validNumbers, number);
 
                         number = new StringBuilder();
                         indexOfNumber.Clear();
                     }
                 }
-
             }
 
             foreach(var num in validNumbers)
@@ -138,9 +96,39 @@ namespace advent_of_code_23
             Console.WriteLine(total.ToString());
         }
 
-        private void PreviosAndNextLines()
+        private static void PreviosAndNextLines(string[] typeOfLine, List<int> indexOfNumber, 
+            List<string> validNumbers, StringBuilder number)
         {
+            foreach (int n in indexOfNumber)
+            {
+                if (typeOfLine[n] != "." && !Char.IsDigit(char.Parse(typeOfLine[n])))
+                {
+                    validNumbers.Add(number.ToString());
+                }
+            }
+            if (typeOfLine[indexOfNumber[0] - 1] != ".")
+            {
+                validNumbers.Add(number.ToString());
+            }
 
+            if (typeOfLine[indexOfNumber[number.Length - 1] + 1] != ".")
+            {
+                validNumbers.Add(number.ToString());
+            }
+        }
+
+        private static void CheckSameLine(string[] arrayLine, List<int> indexOfNumber,
+            List<string> validNumbers, StringBuilder number)
+        {
+            if (arrayLine[indexOfNumber[0] - 1] != ".")
+            {
+                validNumbers.Add(number.ToString());
+            }
+
+            if (arrayLine[indexOfNumber[number.Length - 1] + 1] != ".")
+            {
+                validNumbers.Add(number.ToString());
+            }
         }
     }
 }
