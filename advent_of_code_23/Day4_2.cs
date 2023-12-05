@@ -24,7 +24,16 @@ namespace advent_of_code_23
                 cardsWon[i] = 1;
             }
             
-            CountCards(allNumbersGame, allMyNumbers, ref cardsWon);          
+            CountCards(allNumbersGame, allMyNumbers, ref cardsWon);
+
+            int total = 0;
+
+            foreach (int i in cardsWon) 
+            {
+                total += i;
+            }
+
+            Console.WriteLine(total);
         }   
         
         private static (List<List<string>>, List<List<string>>) MappingNumbers(
@@ -100,23 +109,10 @@ namespace advent_of_code_23
                 }               
             }
 
-            int endRecursion = index + 1;
-            
-            while (endRecursion < allMyNumbers.Count)
+            if (index < allMyNumbers.Count - 1)
             {
                 index++;
                 CountCards(allNumbersGame, allMyNumbers, ref cardsWon, index);
-            }
-
-            if (endRecursion == allMyNumbers.Count)
-            {
-                int total = 0;
-                foreach(var number in cardsWon)
-                {
-                    total += number;
-                }
-                Console.WriteLine(total.ToString());
-                System.Environment.Exit(0);
             }
         }           
     }
