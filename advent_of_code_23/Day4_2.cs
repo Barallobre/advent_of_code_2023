@@ -1,16 +1,13 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Text;
 using System.Text.RegularExpressions;
 
 namespace advent_of_code_23
 {
-    internal class Day4
+    internal class Day4_2
     {
         
         public static void Solution(List<string> lines) 
-        {
-            
-            
+        {                    
             List<string> numbersGame = new List<string>();
             List<List<string>> allNumbersGame = new List<List<string>>();
 
@@ -20,10 +17,14 @@ namespace advent_of_code_23
             StringBuilder numberBuffer = new StringBuilder();
             
             (allNumbersGame, allMyNumbers) = MappingNumbers(lines, numbersGame, allNumbersGame, myNumbers, allMyNumbers, numberBuffer);
-
-            CountPoints(allNumbersGame, allMyNumbers);
-
-                   
+            
+            int[] cardsWon = new int[allNumbersGame.Count];
+            for (int i = 0; i < cardsWon.Length; i++)
+            {
+                cardsWon[i] = 1;
+            }
+            
+            CountCards(allNumbersGame, allMyNumbers, ref cardsWon);          
         }   
         
         private static (List<List<string>>, List<List<string>>) MappingNumbers(
@@ -76,29 +77,47 @@ namespace advent_of_code_23
             return (allNumbersGame, allMyNumbers);
         }
 
-        private static void CountPoints(List<List<string>> allNumbersGame,List<List<string>> allMyNumbers)
+        private static void CountCards(List<List<string>> allNumbersGame,
+            List<List<string>> allMyNumbers, ref int[] cardsWon, int index = 0)
         {
-            double power = 0;
-            double total = 0;
-            double sum = 0;
-            for (int i = 0; i < allMyNumbers.Count; i++)
+            int sum = 0;
+              
+            int timesLooping = cardsWon[index];
+
+            for (int i = 0; i < timesLooping; i++)
             {
-                foreach (var numberPerCard in allNumbersGame[i])
+                sum = index;
+                foreach (var numberPerCard in allNumbersGame[index])
                 {
-                    foreach (var myNumberPerCard in allMyNumbers[i])
+                    foreach (var myNumberPerCard in allMyNumbers[index])
                     {
                         if (numberPerCard == myNumberPerCard)
                         {
-                            power++;
+                            cardsWon[sum + 1] += 1;
+                            sum += 1;
                         }
                     }
-                }
-                sum = power == 0 ? 0 : Math.Pow(2, power) / 2;
-                total += sum;
-                power = 0;
+                }               
             }
 
-            Console.WriteLine(total);
-        }
+            int endRecursion = index + 1;
+            
+            while (endRecursion < allMyNumbers.Count)
+            {
+                index++;
+                CountCards(allNumbersGame, allMyNumbers, ref cardsWon, index);
+            }
+
+            if (endRecursion == allMyNumbers.Count)
+            {
+                int total = 0;
+                foreach(var number in cardsWon)
+                {
+                    total += number;
+                }
+                Console.WriteLine(total.ToString());
+                System.Environment.Exit(0);
+            }
+        }           
     }
 }
