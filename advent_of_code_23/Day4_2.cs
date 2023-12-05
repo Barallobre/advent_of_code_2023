@@ -48,72 +48,63 @@ namespace advent_of_code_23
 
                 string[] twoLines = cleanedLine.Split('|');
 
-                foreach (Char c in twoLines[0])
-                {
-                    if (Char.IsDigit(c))
-                    {
-                        numberBuffer.Append(c);
-                    }
-                    else if (numberBuffer.Length != 0)
-                    {
-                        numbersGame.Add(numberBuffer.ToString());
-                        numberBuffer = new StringBuilder();
-                    }
-                }
+                SaveNumbers(twoLines[0], numberBuffer, numbersGame);
+
                 allNumbersGame.Add(numbersGame);
                 numbersGame = new List<string>();
                 numberBuffer = new StringBuilder();
 
-                foreach (Char c in twoLines[1])
-                {
-                    if (Char.IsDigit(c))
-                    {
-                        numberBuffer.Append(c);
-                    }
-                    else if (numberBuffer.Length != 0)
-                    {
-                        myNumbers.Add(numberBuffer.ToString());
-                        numberBuffer = new StringBuilder();
-                    }
-                }
-                if (numberBuffer.Length != 0) { myNumbers.Add(numberBuffer.ToString()); }
+                SaveNumbers(twoLines[1], numberBuffer, myNumbers);
+
                 allMyNumbers.Add(myNumbers);
                 myNumbers = new List<string>();
                 numberBuffer = new StringBuilder();
-
             }
 
             return (allNumbersGame, allMyNumbers);
         }
 
         private static void CountCards(List<List<string>> allNumbersGame,
-            List<List<string>> allMyNumbers, ref int[] cardsWon, int index = 0)
+            List<List<string>> allMyNumbers, ref int[] cardsWon)
         {
-            int sum = 0;
-              
-            int timesLooping = cardsWon[index];
-
-            for (int i = 0; i < timesLooping; i++)
+            for (int i = 0; i < allMyNumbers.Count; i++)
             {
-                sum = index;
-                foreach (var numberPerCard in allNumbersGame[index])
+                int timesLooping = cardsWon[i];
+                
+                for (int j = 0; j < timesLooping; j++)
                 {
-                    foreach (var myNumberPerCard in allMyNumbers[index])
+                    int sum = i;
+                    foreach (var numberPerCard in allNumbersGame[i])
                     {
-                        if (numberPerCard == myNumberPerCard)
+                        foreach (var myNumberPerCard in allMyNumbers[i])
                         {
-                            cardsWon[sum + 1] += 1;
-                            sum += 1;
+                            if (numberPerCard == myNumberPerCard)
+                            {
+                                cardsWon[sum + 1] += 1;
+                                sum += 1;
+                            }
                         }
                     }
-                }               
+                }
+            }
+        }
+
+        private static void SaveNumbers(string twoLines, StringBuilder numberBuffer, List<string> myNumbers)
+        {
+            foreach (Char c in twoLines)
+            {
+                if (Char.IsDigit(c))
+                {
+                    numberBuffer.Append(c);
+                }
+                else if (numberBuffer.Length != 0)
+                {
+                    myNumbers.Add(numberBuffer.ToString());
+                    numberBuffer = new StringBuilder();
+                }
             }
 
-            if (index < allMyNumbers.Count - 1)
-            {
-                index++;
-                CountCards(allNumbersGame, allMyNumbers, ref cardsWon, index);
-            }
-        }           
+            if (numberBuffer.Length != 0) { myNumbers.Add(numberBuffer.ToString()); }
+        }
     }
 }
