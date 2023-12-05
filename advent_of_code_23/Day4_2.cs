@@ -89,9 +89,9 @@ namespace advent_of_code_23
             }
         }
 
-        private static void SaveNumbers(string twoLines, StringBuilder numberBuffer, List<string> myNumbers)
+        private static void SaveNumbers(string lines, StringBuilder numberBuffer, List<string> numbers)
         {
-            foreach (Char c in twoLines)
+            foreach (Char c in lines)
             {
                 if (Char.IsDigit(c))
                 {
@@ -99,12 +99,12 @@ namespace advent_of_code_23
                 }
                 else if (numberBuffer.Length != 0)
                 {
-                    myNumbers.Add(numberBuffer.ToString());
+                    numbers.Add(numberBuffer.ToString());
                     numberBuffer = new StringBuilder();
                 }
             }
 
-            if (numberBuffer.Length != 0) { myNumbers.Add(numberBuffer.ToString()); }
+            if (numberBuffer.Length != 0) { numbers.Add(numberBuffer.ToString()); }
         }
     }
 }
