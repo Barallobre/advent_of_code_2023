@@ -1,5 +1,6 @@
-﻿
-using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace advent_of_code_23
@@ -19,13 +20,13 @@ namespace advent_of_code_23
             List<string> temperatureToHumidity = new List<string>();   
             List<string> humidityToLocation = new List<string>();
 
-            List<Dictionary<int, int>> seedToSoilDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> soilToFertilizerDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> fertilizerToWaterDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> waterToLightDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> lightToTemperatureDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> temperatureToHumidityDictionary = new List<Dictionary<int, int>>();
-            List<Dictionary<int, int>> humidityToLocationDictionary = new List<Dictionary<int, int>>();
+            List<Dictionary<BigInteger, BigInteger>> seedToSoilDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> soilToFertilizerDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> fertilizerToWaterDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> waterToLightDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> lightToTemperatureDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> temperatureToHumidityDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<Dictionary<BigInteger, BigInteger>> humidityToLocationDictionary = new List<Dictionary<BigInteger, BigInteger>>();
 
             StringBuilder numberBuffer = new StringBuilder();
             for (int i = 0; i < lines.Count; i++)
@@ -74,13 +75,15 @@ namespace advent_of_code_23
                 numberBuffer = new StringBuilder();
             }
 
+            List<BigInteger> locations = new List<BigInteger>();
+            LooKForMatchingNumbers(seedToSoilDictionary, soilToFertilizerDictionary, fertilizerToWaterDictionary, waterToLightDictionary,
+                lightToTemperatureDictionary, temperatureToHumidityDictionary, humidityToLocationDictionary, seeds, locations);
 
-            
 
-            
-    
+            var lowestLocation = locations.Min();
+            Console.WriteLine(lowestLocation.ToString());
 
-           
+
 
         }   
         
@@ -112,21 +115,21 @@ namespace advent_of_code_23
             }
         }
 
-        private static List<Dictionary<int, int>> AllNumbersByType(List<string> seedToSoil)
+        private static List<Dictionary<BigInteger, BigInteger>> AllNumbersByType(List<string> seedToSoil)
         {
-            int num1 = 0;
-            int num2 = 0;
-            int num3 = 0;
+            BigInteger num1 = 0;
+            BigInteger num2 = 0;
+            BigInteger num3 = 0;
 
-            Dictionary<int, int> matchingNumbers = new Dictionary<int, int>();
-            List<Dictionary<int, int>> numbersByTypeInDictionary = new List<Dictionary<int, int>>();
+            Dictionary<BigInteger, BigInteger> matchingNumbers = new Dictionary<BigInteger, BigInteger>();
+            List<Dictionary<BigInteger, BigInteger>> numbersByTypeInDictionary = new List<Dictionary<BigInteger, BigInteger>>();
 
             for (int i = 0; i < seedToSoil.Count; i += 3)
             {
 
-                num1 = Int32.Parse(seedToSoil[i]);
-                num2 = Int32.Parse(seedToSoil[i + 1]);
-                num3 = Int32.Parse(seedToSoil[i + 2]);
+                num1 = BigInteger.Parse(seedToSoil[i]);
+                num2 = BigInteger.Parse(seedToSoil[i + 1]);
+                num3 = BigInteger.Parse(seedToSoil[i + 2]);
 
                 for (int j = 0; j < num3; j++)
                 {
@@ -136,6 +139,62 @@ namespace advent_of_code_23
             numbersByTypeInDictionary.Add(matchingNumbers);
 
             return numbersByTypeInDictionary;
+        }
+
+        private static void LooKForMatchingNumbers(
+            List<Dictionary<BigInteger, BigInteger>> seedToSoilDictionary, 
+            List<Dictionary<BigInteger, BigInteger>> soilToFertilizerDictionary,
+            List<Dictionary<BigInteger, BigInteger>> fertilizerToWaterDictionary, 
+            List<Dictionary<BigInteger, BigInteger>> waterToLightDictionary,
+            List<Dictionary<BigInteger, BigInteger>> lightToTemperatureDictionary,
+            List<Dictionary<BigInteger, BigInteger>> temperatureToHumidityDictionary,
+            List<Dictionary<BigInteger, BigInteger>> humidityToLocationDictionary, 
+            List<string> seeds, 
+            List<BigInteger> locations)
+        {
+
+            
+
+            foreach (var seed in seeds)
+            {
+                var soil = seedToSoilDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == BigInteger.Parse(seed)).ToList();
+                Console.WriteLine(soil.ToString());
+                var soilValue = soil.FirstOrDefault().Value == 0 ? BigInteger.Parse(seed) : soil.FirstOrDefault().Value;
+                Console.WriteLine(soilValue.ToString());
+                var fertilizer = soilToFertilizerDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == soilValue).ToList();
+                
+                var fertilizerValue = fertilizer.FirstOrDefault().Value == 0 ? soilValue : fertilizer.FirstOrDefault().Value;
+                Console.WriteLine(fertilizerValue.ToString());
+                var water = fertilizerToWaterDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == fertilizerValue).ToList();
+
+                var waterValue = water.FirstOrDefault().Value == 0 ? fertilizerValue : water.FirstOrDefault().Value;
+                Console.WriteLine(waterValue.ToString());
+                var light = waterToLightDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == waterValue).ToList();
+
+                var lightValue = light.FirstOrDefault().Value == 0 ? waterValue : light.FirstOrDefault().Value;
+                Console.WriteLine(lightValue.ToString());
+                var temperature = lightToTemperatureDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == lightValue).ToList();
+
+                var temperatureValue = temperature.FirstOrDefault().Value == 0 ? lightValue : temperature.FirstOrDefault().Value;
+                Console.WriteLine(temperatureValue.ToString());
+                var humidity = temperatureToHumidityDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == temperatureValue).ToList();
+
+                var humidityValue = humidity.FirstOrDefault().Value == 0 ? temperatureValue : humidity.FirstOrDefault().Value;
+                Console.WriteLine(humidityValue.ToString());
+                var location = humidityToLocationDictionary.SelectMany(k => k)
+                    .Where(key => key.Key == humidityValue).ToList();
+
+                var locationValue = location.FirstOrDefault().Value == 0 ? humidityValue : location.FirstOrDefault().Value;
+                Console.WriteLine(locationValue.ToString());
+
+                locations.Add(locationValue);
+            }
         }
     }
 }
