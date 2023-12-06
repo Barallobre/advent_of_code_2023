@@ -1,5 +1,7 @@
 ﻿
 
+using System;
+using System.Reflection;
 using System.Text;
 
 namespace advent_of_code_23
@@ -26,61 +28,33 @@ namespace advent_of_code_23
                 {
                     SaveNumbers(lines[i], seeds, numberBuffer);
                 }
-                if (lines[i].Contains("seed-to-soil map:"))
+                if (lines[i].Contains("seed-to-soil"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], seedToSoil, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, seedToSoil, numberBuffer, i);
                 }
                 if (lines[i].Contains("soil-to-fertilizer"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], soilToFertilizer, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, soilToFertilizer, numberBuffer, i);
                 }
                 if (lines[i].Contains("fertilizer-to-water"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], fertilizerToWater, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, fertilizerToWater, numberBuffer, i);
                 }
                 if (lines[i].Contains("water-to-light"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], waterToLight, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, waterToLight, numberBuffer, i);
                 }
                 if (lines[i].Contains("light-to-temperature"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], lightToTemperature, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, lightToTemperature, numberBuffer, i);
                 }
                 if (lines[i].Contains("temperature-to-humidity"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]))
-                    {
-                        SaveNumbers(lines[i], temperatureToHumidity, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, temperatureToHumidity, numberBuffer, i);
                 }
                 if (lines[i].Contains("humidity-to-location"))
                 {
-                    while (!string.IsNullOrEmpty(lines[i]) || i < lines.Count-1)
-                    {
-                        SaveNumbers(lines[i], humidityToLocation, numberBuffer);
-                        i++;
-                    }
+                    SaveNumbersByType(lines, humidityToLocation, numberBuffer, i);
                 }
 
                 numberBuffer = new StringBuilder();
@@ -107,6 +81,15 @@ namespace advent_of_code_23
                 }
             }
             if (numberBuffer.Length != 0) { seeds.Add(numberBuffer.ToString()); }
+        }
+
+        private static void SaveNumbersByType(List<string> lines, List<string> typeOfNumbers, StringBuilder numberBuffer,int index)
+        {
+            while (!string.IsNullOrEmpty(lines[index]) || lines[index] != lines[lines.Count() - 1])
+            {
+                SaveNumbers(lines[index], typeOfNumbers, numberBuffer);
+                index++;
+            }
         }
     }
 }
