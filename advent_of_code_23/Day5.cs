@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Numerics;
-using System.Runtime.CompilerServices;
+﻿using System.Numerics;
 using System.Text;
 
 namespace advent_of_code_23
@@ -75,7 +73,7 @@ namespace advent_of_code_23
                 numberBuffer = new StringBuilder();
             }
 
-            List<BigInteger> locations = new List<BigInteger>();
+            List<BigInteger?> locations = new List<BigInteger?>();
             LooKForMatchingNumbers(seedToSoilDictionary, soilToFertilizerDictionary, fertilizerToWaterDictionary, waterToLightDictionary,
                 lightToTemperatureDictionary, temperatureToHumidityDictionary, humidityToLocationDictionary, seeds, locations);
 
@@ -150,50 +148,112 @@ namespace advent_of_code_23
             List<Dictionary<BigInteger, BigInteger>> temperatureToHumidityDictionary,
             List<Dictionary<BigInteger, BigInteger>> humidityToLocationDictionary, 
             List<string> seeds, 
-            List<BigInteger> locations)
+            List<BigInteger?> locations)
         {
-
-            
-
             foreach (var seed in seeds)
             {
-                var soil = seedToSoilDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == BigInteger.Parse(seed)).ToList();
-                Console.WriteLine(soil.ToString());
-                var soilValue = soil.FirstOrDefault().Value == 0 ? BigInteger.Parse(seed) : soil.FirstOrDefault().Value;
-                Console.WriteLine(soilValue.ToString());
-                var fertilizer = soilToFertilizerDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == soilValue).ToList();
+                List<Dictionary<BigInteger, BigInteger>> soil = new List<Dictionary<BigInteger, BigInteger>>();
+
+
+                BigInteger? soilValue = null;
                 
-                var fertilizerValue = fertilizer.FirstOrDefault().Value == 0 ? soilValue : fertilizer.FirstOrDefault().Value;
-                Console.WriteLine(fertilizerValue.ToString());
-                var water = fertilizerToWaterDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == fertilizerValue).ToList();
+                foreach (var key in seedToSoilDictionary[0])
+                {
+                    if (key.Key == BigInteger.Parse(seed))
+                    {
+                        soilValue = key.Value;
+                        break;
+                    }
+                }
 
-                var waterValue = water.FirstOrDefault().Value == 0 ? fertilizerValue : water.FirstOrDefault().Value;
-                Console.WriteLine(waterValue.ToString());
-                var light = waterToLightDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == waterValue).ToList();
+                BigInteger? soilFinalValue = soilValue is not null ? soilValue : BigInteger.Parse(seed);
 
-                var lightValue = light.FirstOrDefault().Value == 0 ? waterValue : light.FirstOrDefault().Value;
-                Console.WriteLine(lightValue.ToString());
-                var temperature = lightToTemperatureDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == lightValue).ToList();
+               
+                BigInteger? fertilizerValue = null;
 
-                var temperatureValue = temperature.FirstOrDefault().Value == 0 ? lightValue : temperature.FirstOrDefault().Value;
-                Console.WriteLine(temperatureValue.ToString());
-                var humidity = temperatureToHumidityDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == temperatureValue).ToList();
+                foreach (var key in soilToFertilizerDictionary[0])
+                {
+                    if (key.Key == soilFinalValue)
+                    {
+                        fertilizerValue = key.Value;
+                        break;
+                    }
+                }
 
-                var humidityValue = humidity.FirstOrDefault().Value == 0 ? temperatureValue : humidity.FirstOrDefault().Value;
-                Console.WriteLine(humidityValue.ToString());
-                var location = humidityToLocationDictionary.SelectMany(k => k)
-                    .Where(key => key.Key == humidityValue).ToList();
+                BigInteger? fertilizerFinalValue = fertilizerValue is not null ? fertilizerValue : soilFinalValue;
 
-                var locationValue = location.FirstOrDefault().Value == 0 ? humidityValue : location.FirstOrDefault().Value;
-                Console.WriteLine(locationValue.ToString());
 
-                locations.Add(locationValue);
+                BigInteger? waterValue = null;
+
+                foreach (var key in fertilizerToWaterDictionary[0])
+                {
+                    if (key.Key == fertilizerFinalValue)
+                    {
+                        waterValue = key.Value;
+                        break;
+                    }
+                }
+
+                BigInteger? waterFinalValue = waterValue is not null ? waterValue : BigInteger.Parse(seed);
+
+
+                BigInteger? lightValue = null;
+
+                foreach (var key in waterToLightDictionary[0])
+                {
+                    if (key.Key == waterFinalValue)
+                    {
+                        lightValue = key.Value;
+                        break;
+                    }
+                }
+
+                BigInteger? lightFinalValue = lightValue is not null ? lightValue : waterFinalValue;
+
+
+                BigInteger? temperatureValue = null;
+
+                foreach (var key in lightToTemperatureDictionary[0])
+                {
+                    if (key.Key == lightFinalValue)
+                    {
+                        temperatureValue = key.Value;
+                        break;
+                    }
+                }
+
+                BigInteger? temperatureFinalValue = temperatureValue is not null ? temperatureValue : lightFinalValue;
+
+
+                BigInteger? humidityValue = null;
+
+                foreach (var key in temperatureToHumidityDictionary[0])
+                {
+                    if (key.Key == temperatureFinalValue)
+                    {
+                        humidityValue = key.Value;
+                        break;
+                    }
+                }
+
+                BigInteger? humidityFinalValue = humidityValue is not null ? humidityValue : temperatureFinalValue;
+
+
+                BigInteger? locationValue = null;
+
+                foreach (var key in humidityToLocationDictionary[0])
+                {
+                    if (key.Key == humidityFinalValue)
+                    {
+                        locationValue = key.Value;
+                        break;
+                    }
+                }
+
+                BigInteger? locationFinalValue = locationValue is not null ? locationValue : humidityFinalValue;
+
+
+                locations.Add(locationFinalValue);
             }
         }
     }
