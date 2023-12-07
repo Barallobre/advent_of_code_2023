@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace advent_of_code_23
@@ -18,13 +19,13 @@ namespace advent_of_code_23
             List<string> temperatureToHumidity = new List<string>();   
             List<string> humidityToLocation = new List<string>();
 
-            List<Dictionary<BigInteger, BigInteger>> seedToSoilDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> soilToFertilizerDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> fertilizerToWaterDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> waterToLightDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> lightToTemperatureDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> temperatureToHumidityDictionary = new List<Dictionary<BigInteger, BigInteger>>();
-            List<Dictionary<BigInteger, BigInteger>> humidityToLocationDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+            List<(long, long)> seedToSoilTuple = new List<(long, long)>();
+            List<(long, long)> soilToFertilizerTuple = new List<(long, long)>();
+            List<(long, long)> fertilizerToWaterTuple = new List<(long, long)>();
+            List<(long, long)> waterToLightTuple = new List<(long, long)>();
+            List<(long, long)> lightToTemperatureTuple = new List<(long, long)>();
+            List<(long, long)> temperatureToHumidityTuple = new List<(long, long)>();
+            List<(long, long)> humidityToLocationTuple = new List<(long, long)>();
 
             StringBuilder numberBuffer = new StringBuilder();
             for (int i = 0; i < lines.Count; i++)
@@ -37,45 +38,45 @@ namespace advent_of_code_23
                 if (lines[i].Contains("seed-to-soil"))
                 {
                     SaveNumbersByType(lines, seedToSoil, numberBuffer, i);
-                    seedToSoilDictionary = AllNumbersByType(seedToSoil);
+                    seedToSoilTuple = AllNumbersByType(seedToSoil);
                 }
                 if (lines[i].Contains("soil-to-fertilizer"))
                 {
                     SaveNumbersByType(lines, soilToFertilizer, numberBuffer, i);
-                    soilToFertilizerDictionary = AllNumbersByType(soilToFertilizer);
+                    soilToFertilizerTuple = AllNumbersByType(soilToFertilizer);
                 }
                 if (lines[i].Contains("fertilizer-to-water"))
                 {
                     SaveNumbersByType(lines, fertilizerToWater, numberBuffer, i);
-                    fertilizerToWaterDictionary = AllNumbersByType(fertilizerToWater);
+                    fertilizerToWaterTuple = AllNumbersByType(fertilizerToWater);
                 }
                 if (lines[i].Contains("water-to-light"))
                 {
                     SaveNumbersByType(lines, waterToLight, numberBuffer, i);
-                    waterToLightDictionary = AllNumbersByType(waterToLight);
+                    waterToLightTuple = AllNumbersByType(waterToLight);
                 }
                 if (lines[i].Contains("light-to-temperature"))
                 {
                     SaveNumbersByType(lines, lightToTemperature, numberBuffer, i);
-                    lightToTemperatureDictionary = AllNumbersByType(lightToTemperature);
+                    lightToTemperatureTuple = AllNumbersByType(lightToTemperature);
                 }
                 if (lines[i].Contains("temperature-to-humidity"))
                 {
                     SaveNumbersByType(lines, temperatureToHumidity, numberBuffer, i);
-                    temperatureToHumidityDictionary = AllNumbersByType(temperatureToHumidity);
+                    temperatureToHumidityTuple = AllNumbersByType(temperatureToHumidity);
                 }
                 if (lines[i].Contains("humidity-to-location"))
                 {
                     SaveNumbersByType(lines, humidityToLocation, numberBuffer, i);
-                    humidityToLocationDictionary = AllNumbersByType(humidityToLocation);
+                    humidityToLocationTuple = AllNumbersByType(humidityToLocation);
                 }
 
                 numberBuffer = new StringBuilder();
             }
 
-            List<BigInteger?> locations = new List<BigInteger?>();
-            LooKForMatchingNumbers(seedToSoilDictionary, soilToFertilizerDictionary, fertilizerToWaterDictionary, waterToLightDictionary,
-                lightToTemperatureDictionary, temperatureToHumidityDictionary, humidityToLocationDictionary, seeds, locations);
+            List<long?> locations = new List<long?>();
+            LooKForMatchingNumbers(seedToSoilTuple, soilToFertilizerTuple, fertilizerToWaterTuple, waterToLightTuple,
+                lightToTemperatureTuple, temperatureToHumidityTuple, humidityToLocationTuple, seeds, locations);
 
 
             var lowestLocation = locations.Min();
@@ -113,148 +114,160 @@ namespace advent_of_code_23
             }
         }
 
-        private static List<Dictionary<BigInteger, BigInteger>> AllNumbersByType(List<string> seedToSoil)
+        private static List<(long, long)> AllNumbersByType(List<string> seedToSoil)
         {
-            BigInteger num1 = 0;
-            BigInteger num2 = 0;
-            BigInteger num3 = 0;
+            long num1 = 0;
+            long num2 = 0;
+            long num3 = 0;
 
-            Dictionary<BigInteger, BigInteger> matchingNumbers = new Dictionary<BigInteger, BigInteger>();
-            List<Dictionary<BigInteger, BigInteger>> numbersByTypeInDictionary = new List<Dictionary<BigInteger, BigInteger>>();
+
+            Tuple<long, long> tup = new Tuple<long, long>(0, 0);
+            List <(long, long)> numbersByTypeInTupleList = new List<(long, long)>();
 
             for (int i = 0; i < seedToSoil.Count; i += 3)
             {
 
-                num1 = BigInteger.Parse(seedToSoil[i]);
-                num2 = BigInteger.Parse(seedToSoil[i + 1]);
-                num3 = BigInteger.Parse(seedToSoil[i + 2]);
+                num1 = long.Parse(seedToSoil[i]);
+                num2 = long.Parse(seedToSoil[i + 1]);
+                num3 = long.Parse(seedToSoil[i + 2]);
 
                 for (int j = 0; j < num3; j++)
                 {
-                    matchingNumbers.Add(num2 + j, num1 + j);
+                    tup = new Tuple<long, long>(num2 + j, num1 + j);
+                    numbersByTypeInTupleList.Add((tup.Item1, tup.Item2));
                 }
             }
-            numbersByTypeInDictionary.Add(matchingNumbers);
+            
+            
 
-            return numbersByTypeInDictionary;
+            return numbersByTypeInTupleList;
         }
 
         private static void LooKForMatchingNumbers(
-            List<Dictionary<BigInteger, BigInteger>> seedToSoilDictionary, 
-            List<Dictionary<BigInteger, BigInteger>> soilToFertilizerDictionary,
-            List<Dictionary<BigInteger, BigInteger>> fertilizerToWaterDictionary, 
-            List<Dictionary<BigInteger, BigInteger>> waterToLightDictionary,
-            List<Dictionary<BigInteger, BigInteger>> lightToTemperatureDictionary,
-            List<Dictionary<BigInteger, BigInteger>> temperatureToHumidityDictionary,
-            List<Dictionary<BigInteger, BigInteger>> humidityToLocationDictionary, 
+            List<(long, long)> seedToSoilTuple, 
+            List<(long, long)> soilToFertilizerTuple,
+            List<(long, long)> fertilizerToWaterTuple, 
+            List<(long, long)> waterToLightTuple,
+            List<(long, long)> lightToTemperatureTuple,
+            List<(long, long)> temperatureToHumidityTuple,
+            List<(long, long)> humidityToLocationTuple, 
             List<string> seeds, 
-            List<BigInteger?> locations)
+            List<long?> locations)
         {
-            foreach (var seed in seeds)
+            var watch = new System.Diagnostics.Stopwatch();
+
+            watch.Start();
+    
+
+            foreach(var seed in seeds)
             {
-                List<Dictionary<BigInteger, BigInteger>> soil = new List<Dictionary<BigInteger, BigInteger>>();
-
-
-                BigInteger? soilValue = null;
                 
-                foreach (var key in seedToSoilDictionary[0])
+
+
+                long? soilValue = null;
+
+                foreach (var key in seedToSoilTuple)
                 {
-                    if (key.Key == BigInteger.Parse(seed))
+                    if (key.Item1 == long.Parse(seed))
                     {
-                        soilValue = key.Value;
+                        soilValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? soilFinalValue = soilValue is not null ? soilValue : BigInteger.Parse(seed);
+                long? soilFinalValue = soilValue is not null ? soilValue : long.Parse(seed);
 
-               
-                BigInteger? fertilizerValue = null;
 
-                foreach (var key in soilToFertilizerDictionary[0])
+                long? fertilizerValue = null;
+
+                foreach (var key in soilToFertilizerTuple)
                 {
-                    if (key.Key == soilFinalValue)
+                    if (key.Item1 == soilFinalValue)
                     {
-                        fertilizerValue = key.Value;
+                        fertilizerValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? fertilizerFinalValue = fertilizerValue is not null ? fertilizerValue : soilFinalValue;
+                long? fertilizerFinalValue = fertilizerValue is not null ? fertilizerValue : soilFinalValue;
 
 
-                BigInteger? waterValue = null;
+                long? waterValue = null;
 
-                foreach (var key in fertilizerToWaterDictionary[0])
+                foreach (var key in fertilizerToWaterTuple)
                 {
-                    if (key.Key == fertilizerFinalValue)
+                    if (key.Item1 == fertilizerFinalValue)
                     {
-                        waterValue = key.Value;
+                        waterValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? waterFinalValue = waterValue is not null ? waterValue : BigInteger.Parse(seed);
+                long? waterFinalValue = waterValue is not null ? waterValue : fertilizerFinalValue;
 
 
-                BigInteger? lightValue = null;
+                long? lightValue = null;
 
-                foreach (var key in waterToLightDictionary[0])
+                foreach (var key in waterToLightTuple)
                 {
-                    if (key.Key == waterFinalValue)
+                    if (key.Item1 == waterFinalValue)
                     {
-                        lightValue = key.Value;
+                        lightValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? lightFinalValue = lightValue is not null ? lightValue : waterFinalValue;
+                long? lightFinalValue = lightValue is not null ? lightValue : waterFinalValue;
 
 
-                BigInteger? temperatureValue = null;
+                long? temperatureValue = null;
 
-                foreach (var key in lightToTemperatureDictionary[0])
+                foreach (var key in lightToTemperatureTuple)
                 {
-                    if (key.Key == lightFinalValue)
+                    if (key.Item1 == lightFinalValue)
                     {
-                        temperatureValue = key.Value;
+                        temperatureValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? temperatureFinalValue = temperatureValue is not null ? temperatureValue : lightFinalValue;
+                long? temperatureFinalValue = temperatureValue is not null ? temperatureValue : lightFinalValue;
 
 
-                BigInteger? humidityValue = null;
+                long? humidityValue = null;
 
-                foreach (var key in temperatureToHumidityDictionary[0])
+                foreach (var key in temperatureToHumidityTuple)
                 {
-                    if (key.Key == temperatureFinalValue)
+                    if (key.Item1 == temperatureFinalValue)
                     {
-                        humidityValue = key.Value;
+                        humidityValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? humidityFinalValue = humidityValue is not null ? humidityValue : temperatureFinalValue;
+                long? humidityFinalValue = humidityValue is not null ? humidityValue : temperatureFinalValue;
 
 
-                BigInteger? locationValue = null;
+                long? locationValue = null;
 
-                foreach (var key in humidityToLocationDictionary[0])
+                foreach (var key in humidityToLocationTuple)
                 {
-                    if (key.Key == humidityFinalValue)
+                    if (key.Item1 == humidityFinalValue)
                     {
-                        locationValue = key.Value;
+                        locationValue = key.Item2;
                         break;
                     }
                 }
 
-                BigInteger? locationFinalValue = locationValue is not null ? locationValue : humidityFinalValue;
+                long? locationFinalValue = locationValue is not null ? locationValue : humidityFinalValue;
 
 
                 locations.Add(locationFinalValue);
             }
+
+            watch.Stop();
+            Console.WriteLine($"Execution Time: {watch.Elapsed.TotalMilliseconds} ms");
+
         }
     }
 }
