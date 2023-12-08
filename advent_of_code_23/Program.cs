@@ -6,7 +6,7 @@ List<string> lines = new List<string>();
 
 FileReader.Reader(file, ref lines);
 
-Day5_part2.Solution(lines);
+Day6.Solution(lines);
 
 
 
