@@ -4,19 +4,19 @@ using System.Text;
 
 namespace advent_of_code_23
 {
-    internal class Day5_part1_2
+    internal class Day5_part2
     {
-        
-        public static void Solution(List<string> lines) 
+
+        public static void Solution(List<string> lines)
         {
             lines.Add("");
-            List<long> seeds = new List<long>();   
-            List<long> seedToSoil = new List<long>();   
-            List<long> soilToFertilizer = new List<long>();   
-            List<long> fertilizerToWater = new List<long>();   
-            List<long> waterToLight = new List<long>();   
-            List<long> lightToTemperature = new List<long>();   
-            List<long> temperatureToHumidity = new List<long>();   
+            List<long> seeds = new List<long>();
+            List<long> seedToSoil = new List<long>();
+            List<long> soilToFertilizer = new List<long>();
+            List<long> fertilizerToWater = new List<long>();
+            List<long> waterToLight = new List<long>();
+            List<long> lightToTemperature = new List<long>();
+            List<long> temperatureToHumidity = new List<long>();
             List<long> humidityToLocation = new List<long>();
 
 
@@ -26,73 +26,81 @@ namespace advent_of_code_23
                 if (lines[i].Contains("seeds"))
                 {
                     SaveNumbers(lines[i], seeds, numberBuffer);
-                    
+
                 }
                 if (lines[i].Contains("seed-to-soil"))
                 {
                     SaveNumbersByType(lines, seedToSoil, numberBuffer, i);
-                    
+
                 }
                 if (lines[i].Contains("soil-to-fertilizer"))
                 {
                     SaveNumbersByType(lines, soilToFertilizer, numberBuffer, i);
-                    
+
                 }
                 if (lines[i].Contains("fertilizer-to-water"))
                 {
                     SaveNumbersByType(lines, fertilizerToWater, numberBuffer, i);
-                   
+
                 }
                 if (lines[i].Contains("water-to-light"))
                 {
                     SaveNumbersByType(lines, waterToLight, numberBuffer, i);
-                    
+
                 }
                 if (lines[i].Contains("light-to-temperature"))
                 {
                     SaveNumbersByType(lines, lightToTemperature, numberBuffer, i);
-                   
+
                 }
                 if (lines[i].Contains("temperature-to-humidity"))
                 {
                     SaveNumbersByType(lines, temperatureToHumidity, numberBuffer, i);
-                    
+
                 }
                 if (lines[i].Contains("humidity-to-location"))
                 {
                     SaveNumbersByType(lines, humidityToLocation, numberBuffer, i);
-                    
+
                 }
 
                 numberBuffer = new StringBuilder();
             }
 
             List<long?> locations = new List<long?>();
-        
-            foreach (var seed in seeds)
-            {
-                long? soilValue = GetValues(seed, seedToSoil); 
-                long? ferilizerValue = GetValues(soilValue, soilToFertilizer);
-                long? waterValue = GetValues(ferilizerValue, fertilizerToWater);
-                long? lightValue = GetValues(waterValue, waterToLight);
-                long? temperatureValue = GetValues(lightValue, lightToTemperature);
-                long? humidityValue = GetValues(temperatureValue, temperatureToHumidity);
-                long? locationValue = GetValues(humidityValue, humidityToLocation);
 
-                locations.Add(locationValue);
-            }          
+            for (int i = 0; i < seeds.Count; i += 2)
+            {
+
+                long num1 = seeds[i];
+                long num2 = seeds[i + 1];
+
+                for (int j = 0; j < num2; j++) 
+                {
+                    long? soilValue = GetValues(num1 + j, seedToSoil);
+                    long? ferilizerValue = GetValues(soilValue, soilToFertilizer);
+                    long? waterValue = GetValues(ferilizerValue, fertilizerToWater);
+                    long? lightValue = GetValues(waterValue, waterToLight);
+                    long? temperatureValue = GetValues(lightValue, lightToTemperature);
+                    long? humidityValue = GetValues(temperatureValue, temperatureToHumidity);
+                    long? locationValue = GetValues(humidityValue, humidityToLocation);
+
+                    locations.Add(locationValue);
+                }
+
+            }
 
             var lowestLocation = locations.Min();
             Console.WriteLine(lowestLocation.ToString());
 
 
 
-        }   
-        
+        }
+
         private static long? GetValues(long? previousValue, List<long> seedToSoil)
         {
             long? soil = null;
-            
+
 
             for (int i = 0; i < seedToSoil.Count; i += 3)
             {
@@ -112,11 +120,11 @@ namespace advent_of_code_23
             {
                 soil = previousValue;
             }
-            
+
             return soil;
         }
 
-        private static void SaveNumbers(string line, List<long> listOfNumbers,  StringBuilder numberBuffer)
+        private static void SaveNumbers(string line, List<long> listOfNumbers, StringBuilder numberBuffer)
         {
             numberBuffer = new StringBuilder();
             foreach (Char c in line)
@@ -135,7 +143,7 @@ namespace advent_of_code_23
             if (numberBuffer.Length != 0) { listOfNumbers.Add(long.Parse(numberBuffer.ToString())); }
         }
 
-        private static void SaveNumbersByType(List<string> lines, List<long> typeOfNumbers, StringBuilder numberBuffer,int index)
+        private static void SaveNumbersByType(List<string> lines, List<long> typeOfNumbers, StringBuilder numberBuffer, int index)
         {
             while (!string.IsNullOrEmpty(lines[index]) || lines[index] != lines[lines.Count() - 1])
             {
@@ -143,14 +151,5 @@ namespace advent_of_code_23
                 index++;
             }
         }
-
-       
-            
-            
-
-           
-
-
-        
     }
 }
