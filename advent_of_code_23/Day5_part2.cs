@@ -1,13 +1,11 @@
-﻿using System.Numerics;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Text;
 
 namespace advent_of_code_23
 {
     internal class Day5_part2
     {
 
-        public static void Solution(List<string> lines)
+        public static async void Solution(List<string> lines)
         {
             lines.Add("");
             List<long> seeds = new List<long>();
@@ -66,35 +64,86 @@ namespace advent_of_code_23
 
                 numberBuffer = new StringBuilder();
             }
-
             List<long?> locations = new List<long?>();
 
+            await AsyncMethod(seedToSoil, soilToFertilizer, fertilizerToWater, waterToLight,
+                lightToTemperature, temperatureToHumidity, humidityToLocation, locations, seeds).ConfigureAwait(true);
+
+            long? lowestLocation = long.MaxValue;
+
+            foreach (var location in locations) 
+            {
+                if(location < lowestLocation)
+                {
+                    lowestLocation = location;
+                }
+            }
+            Console.WriteLine(locations.Count + " number of locations");
+            Console.WriteLine(lowestLocation.ToString() + " lowest");
+        }
+
+        private static Task<bool> AsyncMethod(List<long> seedToSoil,
+        List<long> soilToFertilizer,
+        List<long> fertilizerToWater,
+        List<long> waterToLight,
+        List<long> lightToTemperature,
+        List<long> temperatureToHumidity,
+        List<long> humidityToLocation,
+        List<long?> locations,
+        List<long> seeds)
+        {
             for (int i = 0; i < seeds.Count; i += 2)
             {
 
                 long num1 = seeds[i];
                 long num2 = seeds[i + 1];
+                var watch = new System.Diagnostics.Stopwatch();
 
-                for (int j = 0; j < num2; j++) 
+                watch.Start();
+                Thread.CurrentThread.IsBackground = true;
+                new Thread(() =>
                 {
-                    long? soilValue = GetValues(num1 + j, seedToSoil);
-                    long? ferilizerValue = GetValues(soilValue, soilToFertilizer);
-                    long? waterValue = GetValues(ferilizerValue, fertilizerToWater);
-                    long? lightValue = GetValues(waterValue, waterToLight);
-                    long? temperatureValue = GetValues(lightValue, lightToTemperature);
-                    long? humidityValue = GetValues(temperatureValue, temperatureToHumidity);
-                    long? locationValue = GetValues(humidityValue, humidityToLocation);
+                    LoopSeeds(seedToSoil, soilToFertilizer, fertilizerToWater, waterToLight,
+                lightToTemperature, temperatureToHumidity, humidityToLocation, num1, num2, locations);
 
-                    locations.Add(locationValue);
-                }
+                }).Start();
+
+                watch.Stop();
+                Console.WriteLine($"Execution Time: {watch.Elapsed.TotalMilliseconds} ms");
 
             }
-
-            var lowestLocation = locations.Min();
-            Console.WriteLine(lowestLocation.ToString());
-
+            return Task.FromResult(true);
+        }
 
 
+
+        private static void LoopSeeds(
+        List<long> seedToSoil,
+        List<long> soilToFertilizer,
+        List<long> fertilizerToWater,
+        List<long> waterToLight,
+        List<long> lightToTemperature,
+        List<long> temperatureToHumidity,
+        List<long> humidityToLocation,
+        long num1,
+        long num2,
+        List<long?> locations)
+        {
+            for (int j = 0; j < num2; j++)
+            {
+                long? soilValue = GetValues(num1 + j, seedToSoil);
+                long? ferilizerValue = GetValues(soilValue, soilToFertilizer);
+                long? waterValue = GetValues(ferilizerValue, fertilizerToWater);
+                long? lightValue = GetValues(waterValue, waterToLight);
+                long? temperatureValue = GetValues(lightValue, lightToTemperature);
+                long? humidityValue = GetValues(temperatureValue, temperatureToHumidity);
+                long? locationValue = GetValues(humidityValue, humidityToLocation);
+
+                locations.Add(locationValue);
+                Console.WriteLine(locationValue.ToString());
+
+            } 
+           
         }
 
         private static long? GetValues(long? previousValue, List<long> seedToSoil)
